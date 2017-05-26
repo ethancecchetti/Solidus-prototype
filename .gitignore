@@ -7,3 +7,4 @@ test-reports/
 code.iml
 .classpath
 .project
+.*.swp
