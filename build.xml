@@ -1,0 +1,118 @@
+<!--
+    Solidus - Confidential Distributed Ledger Transactions via PVORM
+
+    Copyright 2016-2017 Ethan Cecchetti, Fan Zhang and Yan Ji
+
+    Licensed under the Apache License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
+
+      http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+-->
+<project name="Solidus" default="solidus" basedir=".">
+    <property name="jdk.version" value="1.8"/>
+
+    <property name="src.dir" location="src"/>
+    <property name="sol.dir" location="${src.dir}/solidus"/>
+    <property name="test.dir" location="${src.dir}/test"/>
+    <property name="bench.dir" location="${src.dir}/benchmarks"/>
+
+    <property name="lib.dir" location="lib"/>
+    <property name="bin.dir" location="bin"/>
+    <property name="jar.dir" location="jar"/>
+    <property name="report.dir" location="test-reports"/>
+    <property name="doc.dir" location="doc"/>
+
+    <property name="solidus.jar.name" value="${ant.project.name}.jar"/>
+    <property name="test.jar.name" value="${ant.project.name}-test.jar"/>
+
+    <path id="class.path">
+        <fileset dir="${lib.dir}" includes="**/*.jar"/>
+    </path>
+
+    <path id="test.jar.path" location="${jar.dir}/${test.jar.name}"/>
+
+    <target name="clean" description="cleans out all generated files">
+        <delete dir="${bin.dir}"/>
+        <delete dir="${jar.dir}"/>
+        <delete dir="${report.dir}"/>
+        <delete dir="${doc.dir}"/>
+    </target>
+
+    <target name="solidus" description="compile the main Solidus application">
+        <mkdir dir="${bin.dir}"/>
+        <mkdir dir="${jar.dir}"/>
+        <javac srcdir="${sol.dir}" destdir="${bin.dir}" debug="on" source="${jdk.version}" includeantruntime="false">
+            <classpath refid="class.path"/>
+            <compilerarg value="-Xlint:unchecked"/>
+            <compilerarg value="-Xlint:deprecation"/>
+        </javac>
+        <jar destfile="${jar.dir}/${solidus.jar.name}" basedir="${bin.dir}" includes="solidus/"/>
+    </target>
+
+    <target name="compile.test" depends="solidus" description="compile all testing code">
+        <mkdir dir="${jar.dir}"/>
+        <javac srcdir="${test.dir}" destdir="${bin.dir}" debug="on" source="${jdk.version}" includeantruntime="false">
+            <classpath refid="class.path"/>
+            <compilerarg value="-Xlint:unchecked"/>
+            <compilerarg value="-Xlint:deprecation"/>
+        </javac>
+        <jar destfile="${jar.dir}/${test.jar.name}" basedir="${bin.dir}" includes="solidus/,test/"/>
+    </target>
+
+    <target name="compile.bench" depends="solidus" description="compile all benchmarking code">
+        <javac srcdir="${bench.dir}" destdir="${bin.dir}" debug="on" source="${jdk.version}" includeantruntime="false">
+            <classpath refid="class.path"/>
+            <compilerarg value="-Xlint:unchecked"/>
+            <compilerarg value="-Xlint:deprecation"/>
+        </javac>
+    </target>
+
+    <target name="compile" depends="solidus,compile.test,compile.bench" description="compile all modules"/>
+
+    <target name="test" depends="compile.test" description="compiles and runs all tests">
+        <mkdir dir="${report.dir}"/>
+        <junit printsummary="yes" haltonfailure="no">
+            <classpath>
+                <path refid="class.path"/>
+                <path refid="test.jar.path"/>
+            </classpath>
+
+            <formatter type="plain" />
+
+            <batchtest fork="yes" todir="${report.dir}">
+                <fileset dir="${src.dir}" includes="test/solidus/**/*Test.java"/>
+            </batchtest>
+        </junit>
+    </target>
+
+    <target name="all" depends="compile,test,doc" description="compiles all code, runs all tests, and builds documentation"/>
+    <target name="full" depends="clean,all" description="compiles all code and runs all tests after cleaning out generated files"/>
+
+    <target name="doc" description="generate documentation">
+        <mkdir dir="${doc.dir}"/>
+        <javadoc sourcepath="${src.dir}"
+                destdir="${doc.dir}"
+                packagenames="solidus.*"
+                windowtitle="Solidus Documentation (version 0.1)">
+            <classpath refid="class.path"/>
+            <doctitle>
+                <![CDATA[
+                    <h1>Solidus Prototype, API Documentation</h1>
+                    <p>This is the API documentation for a prototype implementation of the Solidus protocol.
+                    For more details, see the <a target="_blank" href="https://github.com/ececchetti/Solidus/">Solidus github repo</a>.</p>
+                    <p>The code here makes use of the <a target="_blank" href="https://docs.oracle.com/javase/8/docs/api/">JDK 1.8</a>,
+                    <a target="_blank" href="http://google.github.io/guava/releases/19.0/api/docs/">Guava 19.0</a>,
+                    <a target="_blank" href="http://bouncycastle.org/docs/docs1.5on/index.html">BouncyCastle 1.55</a>, and
+                    <a target="_blank" href="https://zookeeper.apache.org/doc/r3.4.9/api/index.html">Apache ZooKeeper 3.4.9</a>.</p>
+                ]]>
+            </doctitle>
+        </javadoc>
+    </target>
+</project>

@@ -1,0 +1,9 @@
+bin/
+out/
+jar/
+doc/
+test-reports/
+.idea
+code.iml
+.classpath
+.project
