@@ -55,6 +55,21 @@ Any number of Solidus banks can operate on a single host (each connecting to the
 but placing more than one bank on a single host will reduce performance;
 bank-level verification is extremely CPU-intensive and having multiple banks on the same host will force them to compete for system resources.
 
+#### Building and Running the Code
+
+Building the Solidus prototype is done through `ant`.
+The system contains the following `ant` targets:
+* `solidus` (default): This compiles the basic Solidus system code
+* `compile.bench`: The compiles the benchmarking utilities.
+* `test`: Compiles and runs the Solidus unit tests. Reports are placed in the `test-reports/` directory.
+* `doc`: Builds JavaDoc documentation into the `doc/` directory.
+* `all`: Compiles all code, runs all unit tests, and builds documentation.
+* `clean`: Removes all generated files.
+* `full`: The same as `ant clean all`.
+
+All compiled code is placed in the `bin/` directory.
+To run benchmarks, simply use `javac` including `lib/` and `bin/` in the classpath.
+
 #### ZooKeeper Driver
 
 The [ZooKeeper Driver](src/solidus/zookeeper/ZooKeeperDriver.java) provides an asynchronous interface for applications to connect to a Solidus instance running on top of ZooKeeper.
