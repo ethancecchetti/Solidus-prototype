@@ -18,20 +18,22 @@
 
 package test.solidus.zkproofs;
 
-import com.google.common.collect.ImmutableList;
 import org.bouncycastle.math.ec.ECPoint;
 import org.junit.Assert;
+import org.junit.BeforeClass;
 import org.junit.Test;
+import org.junit.experimental.theories.DataPoint;
+import org.junit.experimental.theories.Theories;
+import org.junit.experimental.theories.Theory;
 import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
-import org.junit.runners.Parameterized.Parameters;
+
 import solidus.util.CryptoConstants;
 import solidus.util.EncryptionParams;
 import solidus.zkproofs.SchnorrSignature;
+
 import test.util.TestUtils;
 
 import java.math.BigInteger;
-import java.util.Collection;
 import java.util.Random;
 
 /**
@@ -40,51 +42,44 @@ import java.util.Random;
  * @author fanz@cs.cornell.edu
  */
 
-@RunWith(Parameterized.class)
+@RunWith(Theories.class)
 public class SchnorrSignatureTest {
     private static final int MESSAGE_LENGTH = 1000;
     private static final EncryptionParams PARAMS = EncryptionParams.newTestParams(new Random(TestUtils.RANDOM_SEED),
             CryptoConstants.CURVE, CryptoConstants.DIGEST);
 
-    @Parameters
-    public static Collection<Object[]> data() {
-        BigInteger signKey = PARAMS.getRandomIndex();
-        ECPoint verKey = PARAMS.getGenerator().multiply(signKey);
+    private static final BigInteger SIGN_KEY = new BigInteger(
+            "7bf0160c5a4fc3e505aae48d494f0f1a2f8e95ca9977dfcf454a2c3ac09744c1", 16);
+    private static final BigInteger OTHER_SIGN_KEY = new BigInteger(
+            "52a8573d012a3b84eb254d21828799af2ecaacfb37cb564aadaec9e3fda8c8dc", 16);
 
-        BigInteger otherSignKey = PARAMS.getRandomIndex();
-        ECPoint otherVerKey = PARAMS.getGenerator().multiply(otherSignKey);
+    @DataPoint
+    public static final ECPoint VER_KEY = PARAMS.getGenerator().multiply(SIGN_KEY);
+    @DataPoint
+    public static final ECPoint OTHER_VER_KEY = PARAMS.getGenerator().multiply(OTHER_SIGN_KEY);
 
-        byte[] message = new byte[MESSAGE_LENGTH];
-        PARAMS.getRandomSource().nextBytes(message);
-        byte[] otherMessage = new byte[MESSAGE_LENGTH];
-        PARAMS.getRandomSource().nextBytes(otherMessage);
+    @DataPoint
+    public static final byte[] MSG1 = new byte[MESSAGE_LENGTH];
+    @DataPoint
+    public static final byte[] MSG2 = new byte[MESSAGE_LENGTH];
 
-        SchnorrSignature sig = SchnorrSignature.sign(PARAMS, signKey, message);
-
-        return ImmutableList
-                .copyOf(new Object[][] { { message, sig, verKey, true }, { message, sig, otherVerKey, false },
-                        { otherMessage, sig, verKey, false }, { otherMessage, sig, otherVerKey, false }, });
+    @BeforeClass
+    public static void initMessages() {
+        PARAMS.getRandomSource().nextBytes(MSG1);
+        MSG2[0] = (byte) (MSG1[0] ^ 0xff);
+        System.arraycopy(MSG1, 1, MSG2, 1, MESSAGE_LENGTH - 1);
     }
 
-    private final byte[] m_message;
-    private final SchnorrSignature m_signature;
-    private final ECPoint m_publicKey;
-    private final boolean m_shouldVerify;
+    @Theory
+    public void testVerification(ECPoint verKey, byte[] message) {
+        SchnorrSignature sig = SchnorrSignature.sign(PARAMS, SIGN_KEY, MSG1);
 
-    public SchnorrSignatureTest(byte[] message, SchnorrSignature signature, ECPoint publicKey, boolean shouldVerify) {
-        m_message = message;
-        m_signature = signature;
-        m_publicKey = publicKey;
-        m_shouldVerify = shouldVerify;
-    }
-
-    @Test
-    public void testVerification() {
-        Assert.assertEquals(m_shouldVerify, m_signature.verify(m_publicKey, m_message));
+        Assert.assertEquals((verKey == VER_KEY && message == MSG1), sig.verify(verKey, message));
     }
 
     @Test
     public void testSerialization() {
-        TestUtils.testSerialization(m_signature, SchnorrSignature::serialReadIn, PARAMS);
+        TestUtils.testSerialization(SchnorrSignature.sign(PARAMS, SIGN_KEY, MSG1), SchnorrSignature::serialReadIn,
+                PARAMS);
     }
 }
