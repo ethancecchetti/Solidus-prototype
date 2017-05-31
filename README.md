@@ -12,7 +12,7 @@ Within this framework, Solidus hides both transaction values and the transaction
 while ensuring that all actions are fully publicly verifiable.
 
 For a brief overview of the protocol, trust model, and problems Solidus aims to solve, see the [Brief Overview](#brief-overview) section below.
-For a detailed explanation with formal definitions and theorems, see the [Solidus academic paper](http://www.initc3.org/files/solidus.pdf).
+For a detailed explanation with formal definitions and theorems, see the [Solidus academic paper](https://eprint.iacr.org/2017/317.pdf).
 
 
 ## Running the Code
