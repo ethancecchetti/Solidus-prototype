@@ -51,6 +51,10 @@ These must both be installed and set up on each machine that will run Solidus.
 Each host should be running a single instance of ZooKeeper to which one more more Solidus banks can connect.
 No other processes should connect to the ZooKeeper network.
 
+To set up ZooKeeper, see the [ZooKeeper Getting Started](https://zookeeper.apache.org/doc/r3.4.9/zookeeperStarted.html) guide.
+The guide explains how to configure and run a ZooKeeper network, which simply acts as a distributed filesystem.
+The ZooKeeper network can then serve as the consensus layer for Solidus, as described below.
+
 Any number of Solidus banks can operate on a single host (each connecting to the same ZooKeeper process on that host),
 but placing more than one bank on a single host will reduce performance;
 bank-level verification is extremely CPU-intensive and having multiple banks on the same host will force them to compete for system resources.
@@ -76,9 +80,10 @@ The [ZooKeeper Driver](src/solidus/zookeeper/ZooKeeperDriver.java) provides an a
 
 In order to connect to a Solidus instance, an application must construct a [`LocalBank` object](src/solidus/state/LocalBank.java) with all accounts already created
 (see above, we do not support dynamic account creation),
-and pass that to a new `ZooKeeperDriver` object with the proper connection string
-(same connection string as the Apache ZooKeeper's [ZooKeeper Object](https://zookeeper.apache.org/doc/r3.4.9/api/index.html?org/apache/zookeeper/ZooKeeper.html)).
-From here, all interaction can occur through the `ZooKeeperDriver` object.
+and pass that to a new [`ZooKeeperDriver` object](src/solidus/zookeeper/ZooKeeperDriver.java).
+The constructor also requires an [`EncryptionParams` object](src/solidus/util/EncryptionParams.java)&mdash;the main system-level configuration object,&mdash;a thread pool size for generating and verifying proofs,
+and a connection string to connect to the underlying ZooKeeper network (this is passed directly to Apache ZooKeeper's [ZooKeeper Object](https://zookeeper.apache.org/doc/r3.4.9/api/index.html?org/apache/zookeeper/ZooKeeper.html)).
+From here, all interaction can occur through the new `ZooKeeperDriver` object.
 
 The primary means of interaction is through `ZooKeeperDriver`'s `requestTransaction` methods.
 These methods allow a user to queue a transaction request which the driver will process using the local `Bank` object at the next available opportunity.
