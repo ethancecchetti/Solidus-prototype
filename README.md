@@ -74,7 +74,7 @@ To run benchmarks, simply use `javac` including `lib/` and `bin/` in the classpa
 
 The [ZooKeeper Driver](src/solidus/zookeeper/ZooKeeperDriver.java) provides an asynchronous interface for applications to connect to a Solidus instance running on top of ZooKeeper.
 
-In order to connect to a Solidus instance, an application must construct a [`Bank` object](src/solidus/state/Bank.java) with all accounts already created
+In order to connect to a Solidus instance, an application must construct a [`LocalBank` object](src/solidus/state/LocalBank.java) with all accounts already created
 (see above, we do not support dynamic account creation),
 and pass that to a new `ZooKeeperDriver` object with the proper connection string
 (same connection string as the Apache ZooKeeper's [ZooKeeper Object](https://zookeeper.apache.org/doc/r3.4.9/api/index.html?org/apache/zookeeper/ZooKeeper.html)).
