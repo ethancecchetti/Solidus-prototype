@@ -48,7 +48,7 @@ The suitability of ZooKeeper is highly dependent on the specific trust and relia
 If you still want to run the Solidus prototype, you will need [JDK 1.8](http://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html) (or newer),
 and an installation of [Apache ZooKeeper](https://zookeeper.apache.org/) (v3.4.9 or newer).
 These must both be installed and set up on each machine that will run Solidus.
-Each host should be running a single instance of ZooKeeper to which one more more Solidus banks can connect.
+Each host should be running a single instance of ZooKeeper to which one or more Solidus banks can connect.
 No other processes should connect to the ZooKeeper network.
 
 To set up ZooKeeper, see the [ZooKeeper Getting Started](https://zookeeper.apache.org/doc/r3.4.9/zookeeperStarted.html) guide.
