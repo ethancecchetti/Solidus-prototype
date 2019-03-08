@@ -134,7 +134,7 @@ That is, one account must lose exactly the amount of money another gains.
 Generally speaking, however, financial systems are not closed; assets can enter and leave the system.
 To account for this, specific users can be designed _asset notaires_.
 Asset notaries do not have balances and are trusted to create and destroy assets within the system.
-For a more complete explanation of asset notaries and an example of what they might represent, see Section 3 of the [Solidus paper](http://www.initc3.org/files/solidus.pdf).
+For a more complete explanation of asset notaries and an example of what they might represent, see Section 3 of the [Solidus paper](https://eprint.iacr.org/2017/317.pdf).
 
 ### Trust Model
 
@@ -176,7 +176,7 @@ by proving that the user had a given account balance to the asset notary, which 
 Solidus employs a Publicly Verifiable Oblivious RAM Machine (PVORM) to maintain confidentiality of account accesses in a publicly-verifiable fashion.
 A PVORM is designed to be a publicly visible storage system that obscures data values and access patters, while restricting updates (e.g., all balances must be non-negative).
 Anyone who can view the public component of the PVORM can verify that an update was performed correctly and conforms to the restriction.
-For details, see the Section 4 of the [Solidus paper](http://www.initc3.org/files/solidus.pdf).
+For details, see the Section 4 of the [Solidus paper](https://eprint.iacr.org/2017/317.pdf).
 
 Our PVORM construction is based on Circuit ORAM [[4](#references)] and makes heavy use of Generalized Schnorr Proofs [[1](#references)] for public verifiability.
 
